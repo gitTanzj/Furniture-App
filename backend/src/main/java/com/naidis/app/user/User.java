@@ -22,7 +22,6 @@ public class User{
         return id;
     }
     
-    
     public String getUsername() {
         return username;
     }
@@ -32,7 +31,7 @@ public class User{
     }
 
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     public void setPassword(String password) {
