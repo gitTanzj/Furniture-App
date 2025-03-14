@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import supabase from './utils/supabase';
@@ -6,13 +6,37 @@ import supabase from './utils/supabase';
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+    methods: ['GET', 'POST', 'DELETE', 'PUT'],
+    allowedHeaders: ['Content-Type', 'User-Agent', 'Range', 'Content-Range', 'Authorization'],
+    credentials: true
+}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+    console.log(req.method, req.path, req.ip);
+    next();
+});
+
+app.use(async (req, res, next) => {
+	if (req.headers.authorization) {
+		const token = req.headers.authorization;
+		const { data: { user } } = await supabase.auth.getUser(token);
+		if (user) {
+			req.user = user;
+		} else {
+			req.user = null;
+			res.status(401).json({ error: 'Unauthorized' });
+			return;
+		}
+	}
+	next();
+});
+
 app.get('/', (req: Request, res: Response) => {
-    return res.status(200).json({ message: 'This is the API for the exmaple app!' });
+    res.status(200).json({ message: 'This is the API for the exmaple app!' });
 });
 
 app.get('/listings', async (req: Request, res: Response) => {
@@ -24,12 +48,12 @@ app.get('/listings', async (req: Request, res: Response) => {
                 throw error;
             }
 
-            return res.status(200).json(data);
+            res.status(200).json(data);
         } catch (error) {
-            return res.status(500).json({ error: error });
+            res.status(500).json({ error: error });
         }
     } else {
-        return res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Unauthorized' });
     }
 })
 
@@ -42,12 +66,12 @@ app.get('/listings/user', async (req: Request, res: Response) => {
                 throw error;
             }
 
-            return res.status(200).json(data);
+            res.status(200).json(data);
         } catch (error) {
-            return res.status(500).json({ error: error });
+            res.status(500).json({ error: error });
         }
     } else {
-        return res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Unauthorized' });
     }
 })
 
@@ -61,16 +85,15 @@ app.get('/listings/:id', async (req: Request, res: Response) => {
             }
 
             if(data.length === 0) {
-                return res.status(404).json({ error: 'Listing not found' });
-                
-            } 
-
-            return res.status(200).json(data);
+                res.status(404).json({ error: 'Listing not found' });
+            } else {
+                res.status(200).json(data);
+            }
         } catch (error) {
-            return res.status(500).json({ error: error });
+            res.status(500).json({ error: error });
         }
     } else {
-        return res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Unauthorized' });
     }
 })
 
@@ -91,12 +114,12 @@ app.get('/listings/favorites', async (req: Request, res: Response) => {
                 throw listingsError;
             }
 
-            return res.status(200).json(listings);
+            res.status(200).json(listings);
         } catch (error) {
-            return res.status(500).json({ error: error });
+            res.status(500).json({ error: error });
         }
     } else {
-        return res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Unauthorized' });
     }
 })
 
@@ -117,12 +140,12 @@ app.post('/listings', async (req: Request, res: Response) => {
                 throw error;
             }
 
-            return res.status(200).json(data);
+            res.status(200).json(data);
         } catch (error) {
-            return res.status(500).json({ error: error });
+            res.status(500).json({ error: error });
         }
     } else {
-        return res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Unauthorized' });
     }
 })
 
@@ -143,12 +166,12 @@ app.put('/listings/:id', async (req: Request, res: Response) => {
                 throw error;
             }
 
-            return res.status(200).json(data);
+            res.status(200).json(data);
         } catch (error) {
-            return res.status(500).json({ error: error });
+            res.status(500).json({ error: error });
         }
     } else {
-        return res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Unauthorized' });
     }
 })
 
@@ -161,12 +184,12 @@ app.delete('/listings/:id', async (req: Request, res: Response) => {
                 throw error;
             }
 
-            return res.status(200).json({ message: 'Listing deleted successfully' });
+            res.status(200).json({ message: 'Listing deleted successfully' });
         } catch (error) {
-            return res.status(500).json({ error: error });
+            res.status(500).json({ error: error });
         }
     } else {
-        return res.status(401).json({ error: 'Unauthorized' });
+        res.status(401).json({ error: 'Unauthorized' });
     }
 })
 
