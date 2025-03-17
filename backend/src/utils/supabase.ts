@@ -3,7 +3,7 @@ import { Database } from '../types/database.types';
 import 'dotenv/config';
 
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
 if (!supabaseKey) {
 	throw new Error('supabaseKey is required. Please check your environment variables.');

@@ -18,18 +18,19 @@ export const SignupScreen = () => {
   const { userLoggedIn } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
-    useEffect(() => {
-        if(userLoggedIn) {
-            navigation.navigate('Home');
-        }
-    }, [userLoggedIn]);
+  useEffect(() => {
+      if(userLoggedIn) {
+          navigation.navigate('Home');
+      }
+  }, [userLoggedIn]);
 
-    const handleSignup = async () => {
-        const user = await createUserWithEmailAndPassword(email, password, name);
-        if(user) {
-            navigation.navigate('Home');
-        }
-    }
+  const handleSignup = async () => {
+      const user = await createUserWithEmailAndPassword(email, password, name);
+      if(user) {
+          navigation.navigate('Home');
+      }
+  }
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>

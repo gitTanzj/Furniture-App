@@ -20,17 +20,18 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-app.use(async (req, res, next) => {
+app.use(async (req: Request, res: Response, next: NextFunction) => {
 	if (req.headers.authorization) {
-		const token = req.headers.authorization;
-		const { data: { user } } = await supabase.auth.getUser(token);
-		if (user) {
-			req.user = user;
-		} else {
+		const token = req.headers.authorization.split(' ')[1]; // Extract token from "Bearer <token>"
+		const { data, error } = await supabase.auth.getUser(token);
+		if (error || !data.user) {
 			req.user = null;
 			res.status(401).json({ error: 'Unauthorized' });
 			return;
 		}
+		req.user = data.user;
+	} else {
+		req.user = null;
 	}
 	next();
 });
