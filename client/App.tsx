@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider } from './context/AuthContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -11,6 +11,7 @@ import { LoginScreen } from './screens/LoginScreen';
 import { SignupScreen } from './screens/SignupScreen';
 import SplashScreen from './screens/SplashScreen';
 import ItemScreen from './screens/ItemScreen';
+import { FavoritesScreen } from './screens/FavoritesScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -29,11 +30,11 @@ export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   Signup: undefined;
+  Favorites: undefined;
 }
 
 export default function App() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
-  
 
   return (
     <AuthProvider>
@@ -45,10 +46,11 @@ export default function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="Item" component={ItemScreen} />
+          <Stack.Screen name="Favorites" component={FavoritesScreen}/>
         </Stack.Navigator>
         <View style={styles.bottomNav}>
           <TouchableOpacity>
-            <Ionicons name="home-outline" size={24} color="#666" />
+            <Ionicons name="home-outline" size={24} color="#666"/>
           </TouchableOpacity>
           <TouchableOpacity>
             <Ionicons name="bookmark-outline" size={24} color="#666" />
