@@ -1,64 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { StyleSheet, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthProvider } from './context/AuthContext';
-import Ionicons from '@expo/vector-icons/Ionicons';
-
-
-import { HomeScreen } from './screens/HomeScreen';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LoginScreen } from './screens/LoginScreen';
 import { SignupScreen } from './screens/SignupScreen';
 import SplashScreen from './screens/SplashScreen';
-import ItemScreen from './screens/ItemScreen';
-import { FavoritesScreen } from './screens/FavoritesScreen';
+import { MainScreen } from './screens/MainScreen';
 
 export type RootStackParamList = {
-  Home: undefined;
-  Item: {
-    item: {
-      id: string;
-      created_at: string,
-      title: string;
-      category: string,
-      price: number;
-      description: string;
-      user_id: string,
-      image_url: string;
-    }
-  };
   Splash: undefined;
   Login: undefined;
   Signup: undefined;
-  Favorites: undefined;
+  Main: undefined;
 }
 
 export default function App() {
   const Stack = createNativeStackNavigator<RootStackParamList>();
 
+  const Tab = createBottomTabNavigator();
+
   return (
     <AuthProvider>
       <NavigationContainer>
         <View style={{ height: 50 }}/>
-        <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Splash" component={SplashScreen} />
-          <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
-          <Stack.Screen name="Item" component={ItemScreen} />
-          <Stack.Screen name="Favorites" component={FavoritesScreen}/>
+          <Stack.Screen name="Main" component={MainScreen} />
         </Stack.Navigator>
-        <View style={styles.bottomNav}>
-          <TouchableOpacity>
-            <Ionicons name="home-outline" size={24} color="#666"/>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="bookmark-outline" size={24} color="#666" />
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Ionicons name="person-outline" size={24} color="#666" />
-          </TouchableOpacity>
-        </View>
       </NavigationContainer>
     </AuthProvider>
   );

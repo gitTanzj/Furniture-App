@@ -7,7 +7,7 @@ import { RootStackParamList } from '../App';
 import axios from '../utils/axiosInstance';
 import { getApiUrl } from '../utils/functions';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import { MainStackParamList } from '../screens/MainScreen';
 const windowWidth = Dimensions.get('window').width;
 
 export const HomeScreen = () => {
@@ -21,18 +21,11 @@ export const HomeScreen = () => {
     { id: 'lamp', name: 'Lamp', icon: 'bulb-outline' },
   ];
   
-  const { userLoggedIn } = useAuth();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'Home'>>();
+  const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList, 'Home'>>();
   const [selectedCategory, setSelectedCategory] = useState<Category>(categories[0]);
 
   const [products, setProducts] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>();
-
-  useEffect(() => {
-    if (!userLoggedIn) {
-      navigation.navigate('Splash');
-    }
-  }, [userLoggedIn]);
 
   useEffect(() => {
     const fetchProducts = async () => {
