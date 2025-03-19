@@ -1,10 +1,19 @@
 import supabase from "./supabase";
+import { Platform } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const getApiUrl = () => {
-    return process.env.MODE === "production"
-        ? ""
-        : "http://192.168.88.47:3000";
+  if (__DEV__) {
+    if (Platform.OS === 'android') {
+      return 'http://10.0.2.2:3000';
+    }
+    if (Platform.OS === 'ios') {
+      return 'http://localhost:3000';
+    }
+    return 'http://192.168.1.XXX:3000';
+  }
+  return 'https://your-production-api.com';
 };
 
 const createUserWithEmailAndPassword = async (email: string, password: string, name: string) => {

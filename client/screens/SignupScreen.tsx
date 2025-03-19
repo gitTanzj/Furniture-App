@@ -15,8 +15,8 @@ export const SignupScreen = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [agreeToTerms, setAgreeToTerms] = useState(false);
 
-  const { userLoggedIn } = useAuth();
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const { userLoggedIn } = useAuth();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   useEffect(() => {
       if(userLoggedIn) {
@@ -122,7 +122,6 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       padding: 16,
-      marginTop: 50,
     },
     backButton: {
       padding: 8,

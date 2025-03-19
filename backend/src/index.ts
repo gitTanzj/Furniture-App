@@ -41,20 +41,16 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 app.get('/listings', async (req: Request, res: Response) => {
-    if(req.user) {
-        try {
-            const { data, error } = await supabase.from('Listings').select('*');
+    try {
+        const { data, error } = await supabase.from('Listings').select();
 
-            if(error) { 
-                throw error;
-            }
-
-            res.status(200).json(data);
-        } catch (error) {
-            res.status(500).json({ error: error });
+        if(error) { 
+            throw error;
         }
-    } else {
-        res.status(401).json({ error: 'Unauthorized' });
+
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: error });
     }
 })
 
@@ -118,6 +114,27 @@ app.get('/listings/favorites', async (req: Request, res: Response) => {
             res.status(200).json(listings);
         } catch (error) {
             res.status(500).json({ error: error });
+        }
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+})
+
+app.post('/listings/favorites', async (req: Request, res: Response) => {
+    if(req.user) {
+        try {
+            const { data, error } = await supabase.from('Favorites').insert({
+                user_id: req.user.id,
+                listing_id: req.body.listing_id
+            }).select().single();
+
+            if(error) {
+                throw error;
+            }
+
+            res.status(201).json({ message: 'Favorite added successfully', data });
+        } catch (error) {
+            res.status(500).json({error: error})
         }
     } else {
         res.status(401).json({ error: 'Unauthorized' });
