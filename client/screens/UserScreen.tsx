@@ -8,6 +8,7 @@ import { MainStackParamList } from './MainContainer';
 import { ProfileStackParamList } from './ProfileContainer';
 import { logout } from '../utils/functions';
 import { RootStackParamList } from '../App';
+
 export const UserScreen = () => {
   const { currentUser } = useAuth();
   const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -57,7 +58,10 @@ export const UserScreen = () => {
       </View>
 
       <TouchableOpacity style={styles.addButton}>
-        <Text style={styles.addButtonText}>Add a new listing</Text>
+        <Text
+          style={styles.addButtonText}
+          onPress={() => rootNavigation.navigate('CreateListing')}
+        >Add a new listing</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );

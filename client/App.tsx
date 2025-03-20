@@ -8,12 +8,14 @@ import { SignupScreen } from './screens/SignupScreen';
 import SplashScreen from './screens/SplashScreen';
 import { MainContainer } from './screens/MainContainer';
 import ItemScreen from './screens/ItemScreen';
+import CreateListing from './screens/CreateListing';
 
 export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   Signup: undefined;
   Main: undefined;
+  CreateListing: undefined;
   Item: {
     item: {
       id: string;
@@ -43,6 +45,7 @@ export default function App() {
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="Main" component={MainContainer} />
           <Stack.Screen name="Item" component={ItemScreen} />
+          <Stack.Screen name="CreateListing" component={CreateListing} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

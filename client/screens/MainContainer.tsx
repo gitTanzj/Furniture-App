@@ -14,6 +14,18 @@ export type MainStackParamList = {
     Home: undefined;
     Favorites: undefined;
     Profile: undefined;
+    Item: {
+      item: {
+        id: string;
+        created_at: string,
+        title: string;
+        category: string,
+        price: number;
+        description: string;
+        user_id: string,
+        image_url: string;
+      }
+    };
 }
 
 export const MainContainer = () => {

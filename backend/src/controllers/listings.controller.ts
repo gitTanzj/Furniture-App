@@ -179,4 +179,22 @@ const deleteListing = async (req: Request, res: Response) => {
     }
 }
 
-export { getListings, getListingById, getFavoriteListings, addFavorite, removeFavorite, createListing, updateListing, deleteListing };
+const getUserListings = async (req: Request, res: Response) => {
+    if(req.user) {
+        try {
+            const { data, error } = await supabase.from('Listings').select().eq('user_id', req.user.id);
+
+            if(error) {
+                throw error;
+            }
+
+            res.status(200).json(data);
+        } catch (error) {
+            res.status(500).json({ error: error });
+        }
+    } else {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+}
+
+export { getListings, getListingById, getFavoriteListings, addFavorite, removeFavorite, createListing, updateListing, deleteListing, getUserListings };
