@@ -6,7 +6,7 @@ import { RootStackParamList } from '../App';
 import { axiosInstance, getSessionToken } from '../utils/axiosInstance';
 import { getApiUrl } from '../utils/functions';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { MainStackParamList } from '../screens/MainScreen';
+import { MainStackParamList } from './MainContainer';
 import { Database } from '../../backend/src/types/database.types';
 
 const windowWidth = Dimensions.get('window').width;

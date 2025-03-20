@@ -2,12 +2,11 @@ import React, { useEffect } from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeScreen } from './HomeScreen';
 import { FavoritesScreen } from './FavoritesScreen';
-import { ProfileScreen } from './ProfileScreen';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../App';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { ProfileContainer } from './ProfileContainer';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,7 +16,7 @@ export type MainStackParamList = {
     Profile: undefined;
 }
 
-export const MainScreen = () => {
+export const MainContainer = () => {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
     useEffect(() => {
@@ -53,7 +52,7 @@ export const MainScreen = () => {
         >
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Favorites" component={FavoritesScreen} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
+            <Tab.Screen name="Profile" component={ProfileContainer} />
         </Tab.Navigator>
     );
 }

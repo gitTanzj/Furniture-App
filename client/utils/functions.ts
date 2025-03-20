@@ -1,6 +1,8 @@
 import supabase from "./supabase";
 import { Platform } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "../App";
 
 const getApiUrl = () => {
   if (__DEV__) {
@@ -72,7 +74,7 @@ const signInWithEmailAndPassword = (email: string, password: string) => {
     });
 };
 
-const logout = async () => {
+const logout = async (navigation: NativeStackNavigationProp<RootStackParamList>) => {
     try {
         const { error } = await supabase.auth.signOut();
         
@@ -84,7 +86,7 @@ const logout = async () => {
         // Remove the session token
         await AsyncStorage.removeItem('sb-tbriirwigscjuervqjrw-auth-token');
 
-        window.location.href = "/";
+        navigation.navigate('Login');
     } catch (error) {
         console.error('Unexpected error during sign out:', error);
         throw error;

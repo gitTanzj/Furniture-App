@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { LoginScreen } from './screens/LoginScreen';
 import { SignupScreen } from './screens/SignupScreen';
 import SplashScreen from './screens/SplashScreen';
-import { MainScreen } from './screens/MainScreen';
+import { MainContainer } from './screens/MainContainer';
 import ItemScreen from './screens/ItemScreen';
 
 export type RootStackParamList = {
@@ -41,7 +41,7 @@ export default function App() {
           <Stack.Screen name="Splash" component={SplashScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
-          <Stack.Screen name="Main" component={MainScreen} />
+          <Stack.Screen name="Main" component={MainContainer} />
           <Stack.Screen name="Item" component={ItemScreen} />
         </Stack.Navigator>
       </NavigationContainer>
