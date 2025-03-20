@@ -22,7 +22,7 @@ export function LoginScreen() {
   const handleLogin = async () => {
     const user = await signInWithEmailAndPassword(email, password);
     if(user) {
-      navigation.navigate('Home');
+      navigation.navigate('Main');
     }
   }
 

@@ -10,9 +10,9 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { RootStackParamList } from '../App';
 import axios from '../utils/axiosInstance'
 import { getApiUrl } from '../utils/functions';
+import { RootStackParamList } from '../App';
 
 type ItemScreenProps = NativeStackScreenProps<RootStackParamList, 'Item'>;
 

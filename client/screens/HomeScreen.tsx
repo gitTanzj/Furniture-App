@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Dimensions } from 'react-native'
-import { useAuth } from '../context/AuthContext'
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../App';
 import axios from '../utils/axiosInstance';
 import { getApiUrl } from '../utils/functions';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -97,7 +95,7 @@ export const HomeScreen = () => {
           <TouchableOpacity 
             key={product.id} 
             style={styles.productCard}
-            onPress={() => navigation.navigate('Item', { item: product })}
+            onPress={() => navigation.navigate('Item', { item: product } as any)}
           >
             <Image
               source={{ uri: product.image_url }}
