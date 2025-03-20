@@ -11,7 +11,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
-import axios from '../utils/axiosInstance';
+import { axiosInstance, getSessionToken } from '../utils/axiosInstance';
 import { getApiUrl } from '../utils/functions';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
@@ -25,7 +25,12 @@ export const FavoritesScreen = () => {
 
   const fetchFavorites = async () => {
     try {
-      const response = await axios.get(`${getApiUrl()}/listings/favorites`);
+      const token = await getSessionToken();
+      const response = await axiosInstance.get(`${getApiUrl()}/listings/favorites`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       const resData = response.data as any[];
       setFavorites(resData);
     } catch (error) {
@@ -35,8 +40,12 @@ export const FavoritesScreen = () => {
 
   const handleRemoveFavorite = async (listingId: string) => {
     try {
-      await axios.delete(`${getApiUrl()}/listings/favorites/${listingId}`);
-      // Refresh favorites after removal
+      const token = await getSessionToken();
+      await axiosInstance.delete(`${getApiUrl()}/listings/favorites/${listingId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       fetchFavorites();
     } catch (error) {
       console.error('Error removing favorite:', error);
@@ -52,7 +61,7 @@ export const FavoritesScreen = () => {
           <TouchableOpacity 
             key={item.id}
             style={styles.itemContainer}
-            onPress={() => navigation.navigate('Item', { item })}
+            onPress={() => navigation.navigate('Item', { item } as any)}
           >
             <Image
               source={{ uri: item.image_url }}
@@ -72,18 +81,6 @@ export const FavoritesScreen = () => {
           </TouchableOpacity>
         ))}
       </ScrollView>
-
-      <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Ionicons name="home-outline" size={24} color="#666" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons name="bookmark" size={24} color="#4B5FBD" />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Ionicons name="person-outline" size={24} color="#666" />
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 };

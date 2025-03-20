@@ -2,7 +2,6 @@ import supabase from "./supabase";
 import { Platform } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 const getApiUrl = () => {
   if (__DEV__) {
     if (Platform.OS === 'android') {
@@ -34,6 +33,11 @@ const createUserWithEmailAndPassword = async (email: string, password: string, n
             return;
         }
 
+        // Store the session token
+        if (data.session?.access_token) {
+          await AsyncStorage.setItem('sb-tbriirwigscjuervqjrw-auth-token', data.session.access_token);
+        }
+
         resolve(data);
       } catch (error) {
           console.error('Unexpected error during sign up:', error);
@@ -55,6 +59,11 @@ const signInWithEmailAndPassword = (email: string, password: string) => {
             return;
         }
 
+        // Store the session token
+        if (data.session?.access_token) {
+          await AsyncStorage.setItem('sb-tbriirwigscjuervqjrw-auth-token', data.session.access_token);
+        }
+
         resolve(data);
       } catch (err) {
         console.error('Unexpected error during sign in:', err);
@@ -71,6 +80,9 @@ const logout = async () => {
             console.error('Sign out error:', error);
             throw error;
         }
+
+        // Remove the session token
+        await AsyncStorage.removeItem('sb-tbriirwigscjuervqjrw-auth-token');
 
         window.location.href = "/";
     } catch (error) {

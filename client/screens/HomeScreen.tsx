@@ -4,10 +4,12 @@ import { useAuth } from '../context/AuthContext'
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../App';
-import axios from '../utils/axiosInstance';
+import { axiosInstance, getSessionToken } from '../utils/axiosInstance';
 import { getApiUrl } from '../utils/functions';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { MainStackParamList } from '../screens/MainScreen';
+import { Database } from '../../backend/src/types/database.types';
+
 const windowWidth = Dimensions.get('window').width;
 
 export const HomeScreen = () => {
@@ -21,7 +23,7 @@ export const HomeScreen = () => {
     { id: 'lamp', name: 'Lamp', icon: 'bulb-outline' },
   ];
   
-  const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList, 'Home'>>();
+  const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [selectedCategory, setSelectedCategory] = useState<Category>(categories[0]);
 
   const [products, setProducts] = useState<any[]>([]);
@@ -30,7 +32,12 @@ export const HomeScreen = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${getApiUrl()}/listings`);
+        const token = await getSessionToken();
+        const response = await axiosInstance.get(`${getApiUrl()}/listings`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setProducts(response.data as any[]);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -47,7 +54,7 @@ export const HomeScreen = () => {
         setFilteredProducts(products)
       }
     }
-  }, [selectedCategory])
+  }, [selectedCategory, products])
 
   return (
     <View style={styles.container}>
@@ -97,7 +104,7 @@ export const HomeScreen = () => {
           <TouchableOpacity 
             key={product.id} 
             style={styles.productCard}
-            onPress={() => navigation.navigate('Item', { item: product })}
+            onPress={() => rootNavigation.navigate('Item', { item: product } as any)}
           >
             <Image
               source={{ uri: product.image_url }}

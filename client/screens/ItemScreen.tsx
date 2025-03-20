@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, 
   Text, 
@@ -11,7 +11,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { RootStackParamList } from '../App';
-import axios from '../utils/axiosInstance'
+import { axiosInstance, getSessionToken } from '../utils/axiosInstance';
 import { getApiUrl } from '../utils/functions';
 
 type ItemScreenProps = NativeStackScreenProps<RootStackParamList, 'Item'>;
@@ -20,13 +20,16 @@ const ItemScreen = ({ route, navigation }: ItemScreenProps) => {
   const { item } = route.params;
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   
+  
   const handleAddFavorite = async () => {
     try {
-      const response = await axios.post(`${getApiUrl()}/listings/favorites`, {
-        listing_id: item.id
+      const token = await getSessionToken();
+      const response = await axiosInstance.post(`${getApiUrl()}/listings/favorites/${item.id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setIsFavorite(true);
-      console.log(response);
     } catch (error) {
       console.error('Error adding to favorites:', error);
     }

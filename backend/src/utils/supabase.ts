@@ -15,4 +15,10 @@ if (!supabaseUrl) {
 
 const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
+if(supabase){
+	console.log('Supabase client created successfully');
+} else {
+	console.log('Supabase client creation failed');
+}
+
 export default supabase;

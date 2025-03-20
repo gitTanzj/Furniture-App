@@ -7,12 +7,25 @@ import { LoginScreen } from './screens/LoginScreen';
 import { SignupScreen } from './screens/SignupScreen';
 import SplashScreen from './screens/SplashScreen';
 import { MainScreen } from './screens/MainScreen';
+import ItemScreen from './screens/ItemScreen';
 
 export type RootStackParamList = {
   Splash: undefined;
   Login: undefined;
   Signup: undefined;
   Main: undefined;
+  Item: {
+    item: {
+      id: string;
+      created_at: string,
+      title: string;
+      category: string,
+      price: number;
+      description: string;
+      user_id: string,
+      image_url: string;
+    }
+  };
 }
 
 export default function App() {
@@ -29,6 +42,7 @@ export default function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="Main" component={MainScreen} />
+          <Stack.Screen name="Item" component={ItemScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

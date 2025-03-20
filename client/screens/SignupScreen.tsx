@@ -20,14 +20,14 @@ export const SignupScreen = () => {
 
   useEffect(() => {
       if(userLoggedIn) {
-          navigation.navigate('Home');
+          navigation.navigate('Main');
       }
   }, [userLoggedIn]);
 
   const handleSignup = async () => {
       const user = await createUserWithEmailAndPassword(email, password, name);
       if(user) {
-          navigation.navigate('Home');
+          navigation.navigate('Main');
       }
   }
   
