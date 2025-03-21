@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import supabase from '../utils/supabase';
+import sharp from 'sharp';
 
 const getListings = async (req: Request, res: Response) => {
     if(req.user) {
@@ -111,13 +112,45 @@ const removeFavorite = async (req: Request, res: Response) => {
 
 const createListing = async (req: Request, res: Response) => {
     if(req.user) {
+        const image = req.file;
         try {
+            if (!image) {
+                console.log('Missing required file');
+                throw new Error('Missing required file');
+            }
+
+            // Convert buffer to base64 for Sharp processing
+            const imageBuffer = Buffer.from(image.buffer);
+            const image_path = `public/listings_${req.user.id}_${Date.now()}`;
+
+            const croppedImage = await sharp(imageBuffer)
+                .resize(800, 800, {
+                    fit: 'cover',
+                    position: 'centre'
+                })
+                .toBuffer();
+
+            const { data: avatarUpload, error: avatarUploadError } = await supabase.storage
+                .from('listings')
+                .upload(image_path, croppedImage, {
+                    cacheControl: '3600',
+                    upsert: true,
+                    contentType: image.mimetype,
+                });
+
+            if (avatarUploadError) {
+                throw avatarUploadError;
+            }
+
+            const { data: publicUrl } = supabase.storage.from('listings').getPublicUrl(image_path);
+
             const { data, error } = await supabase.from('Listings').insert({
                 user_id: req.user.id,
                 title: req.body.title,
                 description: req.body.description,
                 price: req.body.price,
-                image_url: req.body.image_url
+                category: req.body.category,
+                image_url: publicUrl.publicUrl
             })
             .select()
             .single();
@@ -128,7 +161,8 @@ const createListing = async (req: Request, res: Response) => {
 
             res.status(200).json(data);
         } catch (error) {
-            res.status(500).json({ error: error });
+            console.error('Error in createListing:', error);
+            res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error occurred' });
         }
     } else {
         res.status(401).json({ error: 'Unauthorized' });
@@ -164,6 +198,21 @@ const updateListing = async (req: Request, res: Response) => {
 const deleteListing = async (req: Request, res: Response) => {
     if(req.user) {
         try {
+            //delete image from storage
+            const { data: userData, error: userError } = await supabase.from('Listings').select('image_url').eq('id', req.params.id);
+
+            if(userError) {
+                throw userError;
+            }
+
+            if(userData[0].image_url) {
+                const { data: imageData, error: imageError } = await supabase.storage.from('listings').remove([userData[0].image_url]);
+
+                if(imageError) {
+                    throw imageError;
+                }
+            }
+
             const { data, error } = await supabase.from('Listings').delete().eq('id', req.params.id);
 
             if(error) {

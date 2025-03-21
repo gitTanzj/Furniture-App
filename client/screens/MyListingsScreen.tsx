@@ -47,7 +47,7 @@ export const MyListingsScreen = () => {
   const deleteListing = async (listingId: string) => {
     try {
       const token = await getSessionToken();
-      await axiosInstance.delete(`${getApiUrl()}/listings/${listingId}`, {
+      await axiosInstance.delete(`${getApiUrl()}/listings/listing/${listingId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

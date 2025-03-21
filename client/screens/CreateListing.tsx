@@ -9,13 +9,17 @@ import {
   ScrollView,
   Image,
   Modal,
+  Platform,
+  Alert,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { MainStackParamList } from './MainContainer';
 import { RootStackParamList } from '../App';
+import { getApiUrl } from '../utils/functions';
+import { axiosInstance, getSessionToken } from '../utils/axiosInstance';
+import { ProfileStackParamList } from './ProfileContainer';
 
 const categories = [
   { id: 'chair', name: 'Chair' },
@@ -26,13 +30,14 @@ const categories = [
 ];
 
 const CreateListing = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'CreateListing'>>();
+  const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList, 'CreateListing'>>();
   const [image, setImage] = useState<string | null>(null);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -47,9 +52,73 @@ const CreateListing = () => {
     }
   };
 
-  const handleSubmit = () => {
-    // Handle form submission
-    console.log({ image, title, category, price, description });
+  const validateForm = () => {
+    if (!title.trim()) {
+      Alert.alert('Error', 'Please enter a title');
+      return false;
+    }
+    if (!category) {
+      Alert.alert('Error', 'Please select a category');
+      return false;
+    }
+    if (!price.trim()) {
+      Alert.alert('Error', 'Please enter a price');
+      return false;
+    }
+    if (!description.trim()) {
+      Alert.alert('Error', 'Please enter a description');
+      return false;
+    }
+    if (!image) {
+      Alert.alert('Error', 'Please upload an image');
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+    
+    try {
+      setIsSubmitting(true);
+      const token = await getSessionToken();
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('category', category);
+      formData.append('price', price);
+      
+      if (image) {
+        const filename = image.split('/').pop();
+        const match = /\.(\w+)$/.exec(filename || '');
+        const type = match ? `image/${match[1]}` : 'image';
+        
+        formData.append('file', {
+          uri: Platform.OS === 'ios' ? image.replace('file://', '') : image,
+          name: filename,
+          type,
+        } as any);
+      } else {
+        Alert.alert('Error', 'Please upload an image');
+        return;
+      }
+      
+      const response = await axiosInstance.post(`${getApiUrl()}/listings`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      Alert.alert('Success', 'Listing created successfully', [
+        { text: 'OK', onPress: () => rootNavigation.navigate('Main') }
+      ]);
+    } catch (error) {
+      console.error('Error creating listing:', error);
+      Alert.alert('Error', 'Failed to create listing. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -80,6 +149,7 @@ const CreateListing = () => {
               placeholder="Listing Title"
               value={title}
               onChangeText={setTitle}
+              maxLength={50}
             />
           </View>
 
@@ -116,13 +186,20 @@ const CreateListing = () => {
               onChangeText={setDescription}
               multiline
               numberOfLines={4}
+              maxLength={500}
             />
           </View>
         </View>
       </ScrollView>
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Submit</Text>
+      <TouchableOpacity 
+        style={[styles.submitButton, isSubmitting && styles.disabledButton]} 
+        onPress={handleSubmit}
+        disabled={isSubmitting}
+      >
+        <Text style={styles.submitButtonText}>
+          {isSubmitting ? 'Submitting...' : 'Submit'}
+        </Text>
       </TouchableOpacity>
 
       <Modal
@@ -252,6 +329,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 20,
+  },
+  disabledButton: {
+    backgroundColor: '#9DA3C4',
   },
   submitButtonText: {
     color: '#fff',

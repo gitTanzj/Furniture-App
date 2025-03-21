@@ -71,12 +71,6 @@ export function LoginScreen() {
           <Text style={styles.signInButtonText}>Sign In</Text>
         </TouchableOpacity>
 
-        <Text style={styles.orText}>Or sign in with</Text>
-
-        <TouchableOpacity style={styles.googleButton}>
-          <Ionicons name="logo-google" size={24} color="white" />
-        </TouchableOpacity>
-
         <View style={styles.signUpContainer}>
           <Text style={styles.signUpText}>Don't have an account? </Text>
           <TouchableOpacity onPress={() => navigation.navigate('Signup')}>

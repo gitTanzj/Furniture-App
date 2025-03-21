@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -6,18 +6,36 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainStackParamList } from './MainContainer';
 import { ProfileStackParamList } from './ProfileContainer';
-import { logout } from '../utils/functions';
+import { getApiUrl, logout } from '../utils/functions';
 import { RootStackParamList } from '../App';
+import { axiosInstance } from '../utils/axiosInstance';
+import { getSessionToken } from '../utils/axiosInstance';
 
 export const UserScreen = () => {
   const { currentUser } = useAuth();
   const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const navigation = useNavigation<NativeStackNavigationProp<ProfileStackParamList, 'User'>>();
 
+  const [listings, setListings] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchListings();
+  }, []);
+
+  const fetchListings = async () => {
+    const token = await getSessionToken();
+    const response = await axiosInstance.get(`${getApiUrl()}/listings/user`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const resData = response.data as any[];
+    setListings(resData);
+  }
+  
+
   const menuItems = [
     {
       title: 'My Listings',
-      subtitle: 'Actively have 10 listing',
+      subtitle: `${listings.length} listings active`,
       icon: 'list',
       onPress: () => navigation.navigate('MyListings')
     },
